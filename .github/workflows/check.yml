@@ -40,7 +40,16 @@ jobs:
             git config user.email "bot@users.noreply.github.com"
             git add seen.json
             git commit -m "Zustand aktualisiert [skip ci]"
-            git push
+            for i in 1 2 3; do
+              if git pull --rebase origin main && git push; then
+                echo "Push erfolgreich."
+                exit 0
+              fi
+              echo "Push abgewiesen, neuer Versuch ($i/3)..."
+              sleep $((i*3))
+            done
+            echo "Push nach mehreren Versuchen weiterhin abgewiesen."
+            exit 1
           else
             echo "Keine Aenderung am Zustand."
           fi
